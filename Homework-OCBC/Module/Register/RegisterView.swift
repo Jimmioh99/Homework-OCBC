@@ -15,9 +15,12 @@ class RegisterView: UIView {
     
     let registerTextLbl = UILabel()
     
+    let mainStack = UIStackView()
     let usernameTF = FormTextFieldView(title: "Username", placeholder: "Insert your username ...", type: .name)
     let passwordTF = FormTextFieldView(title: "Password", placeholder: "Insert your password ...", type: .password)
     let currentPasswordTF = FormTextFieldView(title: "Current Password", placeholder: "Insert your current password ...", type: .password)
+    
+    let errorView: ErrorMessageView = ErrorMessageView()
     
     let registerBtn = CustomButton(title: "Register")
      
@@ -26,7 +29,8 @@ class RegisterView: UIView {
         backgroundColor = .white
         
         addSubview(mainView)
-        mainView.setupSubviews([backBtn, registerTextLbl, usernameTF, passwordTF, currentPasswordTF, registerBtn])
+        mainView.setupSubviews([backBtn, registerTextLbl, mainStack, registerBtn])
+        mainStack.setupArrangedSubviews(usernameTF, passwordTF, currentPasswordTF, errorView)
         
         setupView()
         setupConstraints()
@@ -42,7 +46,12 @@ class RegisterView: UIView {
     }
     
     func setupView() {
-        registerTextLbl.font = UIFont.boldSystemFont(ofSize: 24)
+        registerTextLbl.font = UIFont.boldSystemFont(ofSize: 32)
+        
+        mainStack.axis = .vertical
+        mainStack.spacing = 20
+        
+        errorView.isHidden = true
     }
     
     func setupConstraints() {
@@ -63,20 +72,10 @@ class RegisterView: UIView {
             make.leading.equalTo(mainView).offset(30)
         }
         
-        usernameTF.snp.makeConstraints { make in
+        mainStack.snp.makeConstraints { make in
             make.top.equalTo(registerTextLbl.snp.bottom).offset(60)
             make.leading.equalTo(mainView).offset(30)
             make.trailing.equalTo(mainView).offset(-30)
-        }
-        
-        passwordTF.snp.makeConstraints { make in
-            make.top.equalTo(usernameTF.snp.bottom).offset(20)
-            make.leading.trailing.equalTo(usernameTF)
-        }
-        
-        currentPasswordTF.snp.makeConstraints { make in
-            make.top.equalTo(passwordTF.snp.bottom).offset(20)
-            make.leading.trailing.equalTo(usernameTF)
         }
         
         registerBtn.snp.makeConstraints { make in

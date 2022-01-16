@@ -8,6 +8,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import Alamofire
 
 class RegisterViewController: UIViewController {
     
@@ -16,19 +17,21 @@ class RegisterViewController: UIViewController {
     
     var disposeBag = DisposeBag()
     
+    var loadingVC: UIAlertController?
+    
     private let validation: RegisterValidation = RegisterValidation()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view = root
+        
+        setRx()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
         //        setStatusBar()
-        
-        setRx()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -41,10 +44,11 @@ class RegisterViewController: UIViewController {
     
     func setRx() {
         root.backBtn.rx.tap.subscribe(onNext: { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.presenter.popToHome()
         }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposeBag)
         
         root.registerBtn.rx.tap.subscribe(onNext: { [weak self] in
+            self?.loadingVC = self?.loader()
             self?.checkRegister()
         }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposeBag)
     }
@@ -55,24 +59,36 @@ class RegisterViewController: UIViewController {
             let password = try validation.validatePassword(root.passwordTF.formTF.text)
             let currentPassword = try validation.validatePassword(root.currentPasswordTF.formTF.text)
             _ = try validation.validateSamePassword(password, currentPassword)
-            presenter.postRegister(username: username, password: password, currentPassword: currentPassword)
+            root.errorView.isHidden = true
+            presenter.postRegister(username: username, password: password)
         } catch {
-//            present(error, animated: true)
             print("error")
+            stopLoading()
+            setError(error: error.localizedDescription)
         }
-        
-        
-//        presenter.pushToHome()
+    }
+    
+    func stopLoading() {
+        if let loadingVC = self.loadingVC {
+            self.stopLoader(loader: loadingVC)
+        }
+    }
+    
+    func setError(error: String) {
+        root.errorView.isHidden = false
+        root.errorView.textLbl.text = error
     }
 }
 
 extension RegisterViewController: RegisterViewControllerDelegate {
-    func successRegister() {
+    func successRegister(model: RegisterModel) {
+        stopLoading()
         presenter.pushToHome()
     }
     
-    func failureRegister() {
-        
+    func failureRegister(error: AFError) {
+        stopLoading()
+        setError(error: error.localizedDescription)
     }
     
     

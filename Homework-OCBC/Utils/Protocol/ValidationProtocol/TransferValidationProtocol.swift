@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+protocol TransferValidationProtocol {
+    func validateRecipient(_ username: SelectUserModel?) throws -> SelectUserModel
+    func validateAmount(_ amount: Int?) throws -> Int
+}

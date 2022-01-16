@@ -26,9 +26,9 @@ class FormTextFieldView: UIView {
         super.init(frame: CGRect.zero)
         
         addSubview(mainStack)
-        mainStack.setupArrangedSubviews([formView, errorLbl])
+        mainStack.setupArrangedSubviews(formView, errorLbl)
         formView.setupSubviews([formStack, button])
-        formStack.setupArrangedSubviews([titleTextLbl, formTF])
+        formStack.setupArrangedSubviews(titleTextLbl, formTF)
         
         initialize(title: title, placeholder: placeholder, type: type)
         
@@ -69,6 +69,7 @@ class FormTextFieldView: UIView {
         
         formTF.autocorrectionType = .no
         formTF.font = UIFont.systemFont(ofSize: 14)
+        formTF.autocapitalizationType = .none
         
         formTF.rx.text.changed.subscribe(onNext: { (text) in
             UIView.animate(withDuration: 0.2, animations: { [weak self] in

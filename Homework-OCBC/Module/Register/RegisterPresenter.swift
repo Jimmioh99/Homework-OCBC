@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Alamofire
 
 final class RegisterPresenter: RegisterPresenterDelegate {
     
@@ -17,22 +18,26 @@ final class RegisterPresenter: RegisterPresenterDelegate {
         self.view = view
     }
     
-    func postRegister(username: String, password: String, currentPassword: String) {
-        interactor.postRegister(username: username, password: password, currentPassword: currentPassword)
+    func postRegister(username: String, password: String) {
+        interactor.postRegister(username: username, password: password)
     }
     
     func pushToHome() {
         router?.pushToHome()
     }
+    
+    func popToHome() {
+        router?.popToHome()
+    }
 }
 
 extension RegisterPresenter: RegisterInteractorOutputDelegate {
-    func successRegister() {
-        view?.successRegister()
+    func successRegister(model: RegisterModel) {
+        view?.successRegister(model: model)
     }
     
-    func failureRegister() {
-        view?.failureRegister()
+    func failureRegister(error: AFError) {
+        view?.failureRegister(error: error)
     }
 }
 

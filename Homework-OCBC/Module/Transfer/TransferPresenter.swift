@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Alamofire
 
 final class TransferPresenter: TransferPresenterDelegate {
     
@@ -16,10 +17,28 @@ final class TransferPresenter: TransferPresenterDelegate {
     init(view: TransferViewControllerDelegate?) {
         self.view = view
     }
+    
+    func postTransfer(accountNo: String, amount: Int, description: String?) {
+        interactor.postTransfer(accountNo: accountNo, amount: amount, description: description)
+    }
+    
+    func pushToSelectUser(_ callback: @escaping ((SelectUserModel) -> Void)) {
+        router?.pushToSelectUser(callback)
+    }
+    
+    func popToHome() {
+        router?.popToHome()
+    }
 }
 
 extension TransferPresenter: TransferInteractorOutputDelegate {
 
+    func successPostTransfer(model: TransferModel) {
+        view?.successPostTransfer(model: model)
+    }
+    func failurePostTransfer(error: AFError) {
+        view?.failurePostTransfer(error: error)
+    }
 }
 
 

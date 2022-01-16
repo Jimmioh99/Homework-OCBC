@@ -8,16 +8,19 @@
 import SnapKit
 
 final class TransferView: UIView {
+    
     let mainView = UIView()
+    
+    lazy var backBtn = BackButton().parent(mainView)
     
     lazy var transferTextLbl: UILabel = UILabel().parent(mainView)
     
     lazy var mainStack: UIStackView = UIStackView().parent(mainView)
-    let payeeBtn = UIButton()
+    let payeeBtn = SelectButton(title: "Payee")
     let amountTF = FormTextFieldView(title: "Amount", placeholder: "Insert amount ...", type: .amount)
-    let descriptionTV = UITextView()
+    let descriptionTV = FormTextView(title: "Description")
     
-    lazy var errorView: ErrorMessageView = ErrorMessageView().parent(mainView)
+    let errorView: ErrorMessageView = ErrorMessageView()
     lazy var transferBtn: CustomButton = CustomButton(title: "Transfer Now").parent(mainView)
      
     override init(frame: CGRect) {
@@ -25,7 +28,7 @@ final class TransferView: UIView {
         backgroundColor = .white
         payeeBtn.parent(mainView)
         addSubview(mainView)
-        mainStack.setupArrangedSubviews(payeeBtn, amountTF, descriptionTV)
+        mainStack.setupArrangedSubviews(payeeBtn, amountTF, descriptionTV, errorView)
         
         setupView()
         setupConstraints()
@@ -41,9 +44,12 @@ final class TransferView: UIView {
     }
     
     func setupView() {
-        transferTextLbl.font = UIFont.boldSystemFont(ofSize: 24)
+        mainStack.axis = .vertical
+        mainStack.spacing = 20
         
+        transferTextLbl.font = UIFont.boldSystemFont(ofSize: 32)
         
+        errorView.isHidden = true
     }
     
     func setupConstraints() {
@@ -54,23 +60,24 @@ final class TransferView: UIView {
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
         }
         
-        transferTextLbl.snp.makeConstraints { make in
+        backBtn.snp.makeConstraints { make in
             make.top.equalTo(mainView).offset(30)
             make.leading.equalTo(mainView).offset(30)
         }
         
+        transferTextLbl.snp.makeConstraints { make in
+            make.top.equalTo(backBtn.snp.bottom).offset(30)
+            make.leading.equalTo(mainView).offset(30)
+        }
+        
         mainStack.snp.makeConstraints { make in
-            make.top.equalTo(transferTextLbl.snp.bottom).offset(60)
+            make.top.equalTo(transferTextLbl.snp.bottom).offset(30)
             make.leading.equalTo(mainView).offset(30)
             make.trailing.equalTo(mainView).offset(-30)
         }
         
-        descriptionTV.snp.makeConstraints { make in
-            make.height.equalTo(100)
-        }
-        
         transferBtn.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(payeeBtn)
+            make.leading.trailing.equalTo(mainStack)
             make.bottom.equalTo(mainView).offset(-30)
         }
         

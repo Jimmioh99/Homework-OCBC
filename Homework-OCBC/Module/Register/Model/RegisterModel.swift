@@ -6,3 +6,16 @@
 //
 
 import Foundation
+import SwiftyJSON
+
+public struct RegisterModel: Codable {
+    
+    public let status: String
+    public let token: String
+    
+    init(json: JSON) {
+        status = json["status"].stringValue
+        token = json["token"].stringValue
+    }
+}
+

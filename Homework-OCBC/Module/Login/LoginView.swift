@@ -13,8 +13,10 @@ class LoginView: UIView {
     
     let loginTextLbl = UILabel()
     
+    let mainStack = UIStackView()
     let usernameTF = FormTextFieldView(title: "Username", placeholder: "Insert your username ...", type: .name)
     let passwordTF = FormTextFieldView(title: "Password", placeholder: "Insert your password ...", type: .password)
+    let errorView: ErrorMessageView = ErrorMessageView()
     
     let loginBtn = CustomButton(title: "Login")
     let registerBtn = CustomButton(title: "Register", type: .light)
@@ -24,7 +26,8 @@ class LoginView: UIView {
         backgroundColor = .white
         
         addSubview(mainView)
-        mainView.setupSubviews([loginTextLbl, usernameTF, passwordTF, loginBtn, registerBtn])
+        mainView.setupSubviews([loginTextLbl, mainStack, loginBtn, registerBtn])
+        mainStack.setupArrangedSubviews(usernameTF, passwordTF, errorView)
         
         setupView()
         setupConstraints()
@@ -41,6 +44,11 @@ class LoginView: UIView {
     
     func setupView() {
         loginTextLbl.font = UIFont.boldSystemFont(ofSize: 24)
+        
+        mainStack.axis = .vertical
+        mainStack.spacing = 20
+        
+        errorView.isHidden = true
     }
     
     func setupConstraints() {
@@ -56,15 +64,10 @@ class LoginView: UIView {
             make.leading.equalTo(mainView).offset(30)
         }
         
-        usernameTF.snp.makeConstraints { make in
+        mainStack.snp.makeConstraints { make in
             make.top.equalTo(loginTextLbl.snp.bottom).offset(60)
             make.leading.equalTo(mainView).offset(30)
             make.trailing.equalTo(mainView).offset(-30)
-        }
-        
-        passwordTF.snp.makeConstraints { make in
-            make.top.equalTo(usernameTF.snp.bottom).offset(20)
-            make.leading.trailing.equalTo(usernameTF)
         }
         
         loginBtn.snp.makeConstraints { make in

@@ -9,6 +9,8 @@ import SnapKit
 
 class HomeView: UIView {
     
+    let contentView = UIView()
+    let mainScroll = UIScrollView()
     let mainView = UIView()
     
     let logoutBtn = UIButton()
@@ -23,15 +25,17 @@ class HomeView: UIView {
     let accountHolderLbl = UILabel()
     
     let transactionTextLbl = UILabel()
-    let transactionTable = UITableView()
+    let transactionTable = UITableView(frame: CGRect(), style: UITableView.Style.grouped)
     
     let transferBtn = CustomButton(title: "Make Transfer")
      
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = UIColor.white
         
-        addSubview(mainView)
+//        addSubview(contentView)
+        addSubview(mainScroll)
+        mainScroll.addSubview(mainView)
         mainView.setupSubviews([logoutBtn, userInfoView, transactionTextLbl, transactionTable, transferBtn])
         userInfoView.addSubview(userInfoStack)
         userInfoStack.setupArrangedSubviews(
@@ -56,39 +60,71 @@ class HomeView: UIView {
         userInfoView.backgroundColor = UIColor.gray.withAlphaComponent(0.5)
         userInfoView.addShadow(radius: 30, corners: [.layerMaxXMaxYCorner, .layerMaxXMinYCorner])
         
-        
         userInfoStack.alignment = .leading
         
         logoutBtn.setTitle("Logout", for: .normal)
+//        logoutBtn.setContentHuggingPriority(UILayoutPriority.defaultLow, for: NSLayoutConstraint.Axis.horizontal)
         
         youHaveTextLbl.text = "You have"
         
-        balanceLbl.text = "SGD 21,421.33"
+        balanceLbl.text = "SGD 0"
+        mainView.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: NSLayoutConstraint.Axis.horizontal)
         
         accountNumberTextLbl.text = "Account No"
         
-        accountNumberLbl.text = "3213-321-9923"
+        accountNumberLbl.text = Account.standard.getStrValue(Account.Value.accountNo)
         
         accountHolderTextLbl.text = "Account Holder"
         
-        accountHolderLbl.text = "Donald Trump"
+        accountHolderLbl.text = Account.standard.getStrValue(Account.Value.username)
         
         transactionTextLbl.text = "Your transaction history"
     }
     
     func setupView() {
         logoutBtn.setTitleColor(.black, for: .normal)
+        logoutBtn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         
         userInfoStack.axis = .vertical
         userInfoStack.spacing = 10
+        
+        youHaveTextLbl.font = UIFont.boldSystemFont(ofSize: 18)
+        
+        balanceLbl.font = UIFont.boldSystemFont(ofSize: 32)
+        
+        accountNumberTextLbl.font = UIFont.systemFont(ofSize: 15)
+        accountNumberTextLbl.textColor = .gray
+        
+        accountNumberLbl.font = UIFont.boldSystemFont(ofSize: 18)
+        
+        accountHolderTextLbl.font = UIFont.systemFont(ofSize: 15)
+        accountHolderTextLbl.textColor = .gray
+        
+        accountHolderLbl.font = UIFont.boldSystemFont(ofSize: 18)
+        
+        transactionTextLbl.font = UIFont.boldSystemFont(ofSize: 18)
+        
+        transactionTable.register(TransactionTableCell.self, forCellReuseIdentifier: "cell")
+        transactionTable.bounces = false
+        transactionTable.showsVerticalScrollIndicator = false
+        transactionTable.backgroundColor = UIColor.white
+        transactionTable.separatorStyle = .none
     }
     
     func setupConstraints() {
         
-        mainView.snp.makeConstraints { make in
+        let screenHeight = UIApplication.shared.windows[0].safeAreaLayoutGuide.layoutFrame.size.height
+        
+        mainScroll.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
             make.leading.trailing.equalTo(self)
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
+        }
+        
+        mainView.snp.makeConstraints { make in
+            make.top.leading.trailing.bottom.equalTo(mainScroll)
+            make.width.equalTo(UIScreen.main.bounds.width)
+            make.height.equalTo(screenHeight)
         }
         
         logoutBtn.snp.makeConstraints { make in
@@ -114,9 +150,10 @@ class HomeView: UIView {
         }
         
         transactionTable.snp.makeConstraints { make in
-            make.top.equalTo(transactionTextLbl.snp.bottom).offset(30)
-            make.leading.trailing.equalTo(mainView)
-            make.bottom.equalTo(transferBtn.snp.top).offset(-30)
+            make.top.equalTo(transactionTextLbl.snp.bottom)
+            make.leading.equalTo(mainView).offset(30)
+            make.trailing.equalTo(mainView).offset(-30)
+            make.bottom.equalTo(transferBtn.snp.top)
         }
         
         transferBtn.snp.makeConstraints { make in

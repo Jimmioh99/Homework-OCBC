@@ -8,71 +8,38 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import Alamofire
 
-class LoginViewController: UIViewController, ObservableObject {
+class LoginViewController: UIViewController {
     
     let root = LoginView()
-//    var appDI: AppDIProtocol
-     var presenter: LoginPresenter
+
+    lazy var presenter: LoginPresenterDelegate = LoginPresenter(view: self)
     
     private let validation: LoginValidation = LoginValidation()
     
+    var loadingVC: UIAlertController?
+    
     var disposeBag = DisposeBag()
-    
-    public init(presenter: LoginPresenter) {
-        self.presenter = presenter
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-//    public init(appDI: AppDIProtocol) {
-//        self.appDI = appDI
-//        self.presenter = appDI.loginDependencies()
-//        super.init(nibName: nil, bundle: nil)
-//    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view = root
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         
         setRx()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        disposeBag = DisposeBag()
-        resetForm()
-    }
-    
-    func resetForm() {
-        root.usernameTF.formTF.text = ""
-        root.passwordTF.formTF.text = ""
-        resignFirstResponder()
-    }
-    
-    func checkLogin() {
-        do {
-            let username = try validation.validateUsername(root.usernameTF.formTF.text)
-            let password = try validation.validatePassword(root.passwordTF.formTF.text)
-            presenter.postLogin(username: username, password: password)
-        } catch {
-//            present(error, animated: true)
-            print("error")
-        }
-        
-        
-//        presenter.pushToHome()
     }
     
     func setRx() {
         root.loginBtn.rx.tap.subscribe(onNext: { [weak self] in
+            self?.loadingVC = self?.loader()
             self?.checkLogin()
         }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposeBag)
         
@@ -80,14 +47,41 @@ class LoginViewController: UIViewController, ObservableObject {
             self?.presenter.pushToRegister()
         }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposeBag)
     }
+    
+    func checkLogin() {
+        do {
+            let username = try validation.validateUsername(root.usernameTF.formTF.text)
+            let password = try validation.validatePassword(root.passwordTF.formTF.text)
+            root.errorView.isHidden = true
+            presenter.postLogin(username: username, password: password)
+        } catch {
+            print(error.localizedDescription)
+            print("error")
+            stopLoading()
+            setError(error: error.localizedDescription)
+        }
+    }
+    
+    func stopLoading() {
+        if let loadingVC = self.loadingVC {
+            self.stopLoader(loader: loadingVC)
+        }
+    }
+    
+    func setError(error: String) {
+        root.errorView.isHidden = false
+        root.errorView.textLbl.text = error
+    }
 }
 
 extension LoginViewController: LoginViewControllerDelegate {
-    func successPostLogin() {
+    func successPostLogin(model: LoginModel) {
+        stopLoading()
         presenter.pushToHome()
     }
     
-    func failurePostLogin() {
-        
+    func failurePostLogin(error: AFError) {
+        stopLoading()
+        setError(error: error.localizedDescription)
     }
 }

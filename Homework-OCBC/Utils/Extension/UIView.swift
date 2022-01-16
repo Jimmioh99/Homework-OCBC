@@ -8,6 +8,13 @@
 import UIKit
 
 extension UIView {
+    @discardableResult
+    public func parent(_ view: UIView) -> Self {
+        view.addSubview(self)
+        translatesAutoresizingMaskIntoConstraints = false
+        return self
+    }
+    
     public func setupSubviews(_ views: [UIView]) {
         for item in views {
             addSubview(item)

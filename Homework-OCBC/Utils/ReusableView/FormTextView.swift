@@ -13,24 +13,19 @@ import RxCocoa
 class FormTextView: UIView {
     
     let mainStack = UIStackView()
-    let formView = UIView()
-    let formStack = UIStackView()
     let titleTextLbl = UILabel()
-    let formTV = UITextField()
-    let button = UIButton()
-    let errorLbl = UILabel()
+    let formTV = UITextView()
+//    let button = UIButton()
     
     var disposeBag = DisposeBag()
     
-    init(title: String, placeholder: String, type: FormTextFieldEnum) {
+    init(title: String) {
         super.init(frame: CGRect.zero)
         
         addSubview(mainStack)
-        mainStack.setupArrangedSubviews([formView, errorLbl])
-        formView.setupSubviews([formStack, button])
-        formStack.setupArrangedSubviews([titleTextLbl, formTV])
+        mainStack.setupArrangedSubviews(titleTextLbl, formTV)
         
-        initialize(title: title, placeholder: placeholder, type: type)
+        initialize(title: title)
         
         setupConstraints()
         setupView()
@@ -40,63 +35,36 @@ class FormTextView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func initialize(title: String, placeholder: String, type: FormTextFieldEnum) {
+    func initialize(title: String) {
         titleTextLbl.text = title
-        formTV.placeholder = placeholder
         
-        formTV.isSecureTextEntry = type == .password
-        
-        formTV.keyboardType = type == .amount ? .numberPad : .default
-        
-    }
-    
-    func setError(error: String = "") {
-        errorLbl.text = error
-        errorLbl.isHidden = error == ""
     }
     
     func setupView() {
         mainStack.axis = .vertical
         
-        formView.setLayer(cornerRadius: 0, borderWidth: 2, borderColor: .black)
+        setLayer(cornerRadius: 0, borderWidth: 2, borderColor: .black)
         
-        formStack.axis = .vertical
-        formStack.spacing = 10
-        formStack.alignment = .leading
-        
-        titleTextLbl.isHidden = true
+//        titleTextLbl.isHidden = true
         titleTextLbl.font = UIFont.boldSystemFont(ofSize: 16)
         
         formTV.autocorrectionType = .no
         formTV.font = UIFont.systemFont(ofSize: 14)
         
-        formTV.rx.text.changed.subscribe(onNext: { (text) in
-            UIView.animate(withDuration: 0.2, animations: { [weak self] in
-                self?.titleTextLbl.isHidden = !(text != nil && text != "")
-            }, completion: nil)
-        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposeBag)
-        
-        button.rx.tap.subscribe(onNext: { [weak self] in
-            self?.formTV.becomeFirstResponder()
-        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposeBag)
-        
-        errorLbl.textColor = .red
+//        button.rx.tap.subscribe(onNext: { [weak self] in
+//            self?.formTV.becomeFirstResponder()
+//        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposeBag)
     }
     
     func setupConstraints() {
         
         mainStack.snp.makeConstraints { make in
-            make.top.leading.equalTo(self)
-            make.trailing.bottom.equalTo(self)
+            make.top.leading.equalTo(self).offset(20)
+            make.trailing.bottom.equalTo(self).offset(-20)
         }
         
-        formStack.snp.makeConstraints { make in
-            make.top.leading.equalTo(formView).offset(20)
-            make.trailing.bottom.equalTo(formView).offset(-20)
-        }
-        
-        button.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom.equalTo(formView)
+        formTV.snp.makeConstraints { make in
+            make.height.equalTo(100)
         }
         
         setNeedsLayout()

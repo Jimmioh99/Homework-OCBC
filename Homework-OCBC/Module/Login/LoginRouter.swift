@@ -17,7 +17,7 @@ final class LoginRouter: LoginRouterDelegate {
     }
     
     func pushToHome() {
-        let homeVC = HomeViewController(presenter: AppDI.shared.homeDependencies())
+        let homeVC = HomeViewController()
         if let navigationController = source?.navigationController {
             navigationController.pushViewController(homeVC, animated: true)
         }

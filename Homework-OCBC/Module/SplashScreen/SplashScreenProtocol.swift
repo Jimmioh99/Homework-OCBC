@@ -5,4 +5,34 @@
 //  Created by Jimmi Oh on 16/01/22.
 //
 
-import Foundation
+import UIKit
+
+protocol SplashScreenViewControllerDelegate: AnyObject {
+}
+
+protocol SplashScreenPresenterDelegate: AnyObject {
+    func pushToHome()
+    func pushToLogin()
+}
+
+protocol SplashScreenRouterDelegate: AnyObject {
+    func pushToHome()
+    func pushToLogin()
+}
+
+protocol SplashScreenInteractorInputDelegate: AnyObject {
+    
+}
+
+protocol SplashScreenInteractorOutputDelegate: AnyObject {
+}
+
+
+
+
+
+
+
+
+
+

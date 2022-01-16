@@ -6,3 +6,5 @@
 //
 
 import Foundation
+
+public var urlString = "https://green-thumb-64168.uc.r.appspot.com/"

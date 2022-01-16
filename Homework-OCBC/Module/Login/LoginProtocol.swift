@@ -6,21 +6,18 @@
 //
 
 import UIKit
+import Alamofire
 
 protocol LoginViewControllerDelegate: AnyObject {
-    func successPostLogin()
-    func failurePostLogin()
+    func successPostLogin(model: LoginModel)
+    func failurePostLogin(error: AFError)
 }
 
-protocol LoginPresenterInputDelegate: AnyObject {
+protocol LoginPresenterDelegate: AnyObject {
     func pushToHome()
     func pushToRegister()
     
     func postLogin(username: String, password: String)
-}
-
-protocol LoginPresenterOutputDelegate: AnyObject {
-    
 }
 
 protocol LoginRouterDelegate: AnyObject {
@@ -33,8 +30,8 @@ protocol LoginInteractorInputDelegate: AnyObject {
 }
 
 protocol LoginInteractorOutputDelegate: AnyObject {
-    func successPostLogin()
-    func failurePostLogin()
+    func successPostLogin(model: LoginModel)
+    func failurePostLogin(error: AFError)
 }
 
 protocol LoginProtocol {

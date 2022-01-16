@@ -21,5 +21,11 @@ final class HomeRouter: HomeRouterDelegate {
             navigationController.pushViewController(transferVC, animated: true)
         }
     }
+    
+    func popToRoot() {
+        if let navigationController = source?.navigationController {
+            navigationController.popToRootViewController(animated: true)
+        }
+    }
 }
 

@@ -25,7 +25,11 @@ class ErrorMessageView: UIView {
     }
     
     func setupView() {
+        setLayer(cornerRadius: 20, borderWidth: 1, borderColor: .red)
+        backgroundColor = UIColor.red.withAlphaComponent(0.2)
         
+        textLbl.textColor = UIColor.red
+        textLbl.numberOfLines = 3
     }
     
     func setupConstraints() {

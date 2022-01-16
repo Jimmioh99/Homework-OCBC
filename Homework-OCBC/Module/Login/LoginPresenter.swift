@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Alamofire
 
 final class LoginPresenter: LoginPresenterDelegate {
     
@@ -16,19 +17,27 @@ final class LoginPresenter: LoginPresenterDelegate {
     init(view: LoginViewControllerDelegate?) {
         self.view = view
     }
-}
-
-extension LoginPresenter: LoginInteractorOutputDelegate {
-
-}
-
-extension LoginPresenter: LoginInteractorOutputDelegate {
-    func successPostLogin() {
-        view?.successPostLogin()
+    
+    func pushToHome() {
+        router?.pushToHome()
     }
     
-    func failurePostLogin() {
-        view?.failurePostLogin()
+    func pushToRegister() {
+        router?.pushToRegister()
+    }
+    
+    func postLogin(username: String, password: String) {
+        interactor.postLogin(username: username, password: password)
+    }
+}
+
+extension LoginPresenter: LoginInteractorOutputDelegate {
+    func successPostLogin(model: LoginModel) {
+        view?.successPostLogin(model: model)
+    }
+    
+    func failurePostLogin(error: AFError) {
+        view?.failurePostLogin(error: error)
     }
     
     
